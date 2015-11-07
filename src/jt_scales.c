@@ -1,7 +1,7 @@
 #include "jt_scales.h"
-#include "app.h"
 #include "bool.h"
 #include "grid.h"
+#include "pads_and_midi_controller.h"
 
 #define PAD_KEY_TYPE_MAJOR XY_IN_GRID(0,7)
 #define PAD_KEY_TYPE_MINOR XY_IN_GRID(0,6)
@@ -53,20 +53,6 @@ u8 key_signature_section[KEY_SIGNATURE_COUNT] = {
 #define DEFUALT_KEY_SIGNATURE PAD_KEY_SIGNATURE_C
 #define DEFUALT_LAYOUT PAD_LAYOUT_CHROMATIC
 
-typedef struct _PadColour {
-  u8 r;
-  u8 g;
-  u8 b;
-} PadColour;
-
-PadColour red = {MAXLED,0,0};
-PadColour green = {0,MAXLED,0};
-PadColour blue = {0,0,MAXLED};
-PadColour dark_green = {0,MAXLED/4,0};
-PadColour dark_blue = {0,0,MAXLED/4};
-PadColour white = {MAXLED,MAXLED,MAXLED};
-PadColour grey = {MAXLED/4,MAXLED/4,MAXLED/4};
-
 typedef enum _KeyType {
   KeyTypeMajor = 0,
   KeyTypeMinor,
@@ -96,8 +82,6 @@ KeyType current_key_type;
 KeySignature current_key_signature;
 Layout current_layout;
 
-void set_pad_colour(u8 index, PadColour padColour);
-
 void setup_defaults();
 void setup_key_signature_section();
 
@@ -111,17 +95,6 @@ bool is_in_layout_section(u8 index);
 bool is_in_note_section(u8 index);
 
 // private functions
-void set_pad_colour(u8 grid_index, PadColour padColour)
-{
-  hal_plot_led(TYPEPAD, grid_to_index(grid_index), padColour.r, padColour.g, padColour.b);
-}
-
-void send_midi_note_on(u8 note_number, u8 velocity)
-{
-  hal_send_midi(DINMIDI, NOTEON | 0, note_number, velocity);
-  hal_send_midi(USBSTANDALONE, NOTEON | 0, note_number, velocity);
-}
-
 void setup_defaults()
 {
   toggle_major_minor(DEFAULT_KEY_TYPE);
