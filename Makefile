@@ -2,7 +2,7 @@ BUILDDIR = build
 
 TOOLS = tools
 
-SOURCES += src/app.c
+SOURCES += src/app.c src/jt_scales.c
 
 INCLUDES += -Iinclude -I
 
