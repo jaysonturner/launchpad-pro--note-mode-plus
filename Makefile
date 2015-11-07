@@ -2,7 +2,7 @@ BUILDDIR = build
 
 TOOLS = tools
 
-SOURCES += src/app.c src/jt_scales.c src/jt_scale_factory.c
+SOURCES += src/app.c src/jt_scales.c src/jt_scale_factory.c src/grid.c
 
 INCLUDES += -Iinclude -I
 

@@ -1,34 +1,27 @@
 #include "jt_scales.h"
 #include "app.h"
+#include "bool.h"
+#include "grid.h"
 
-//need a bool!
-#define false 0
-#define true 1
-typedef signed char bool;
+#define PAD_KEY_TYPE_MAJOR XY_IN_GRID(0,7)
+#define PAD_KEY_TYPE_MINOR XY_IN_GRID(0,6)
 
-//left corner
-#define PAD_KEY_TYPE_MAJOR 81
-#define PAD_KEY_TYPE_MINOR 71
+#define PAD_LAYOUT_CHROMATIC XY_IN_GRID(7,7)
+#define PAD_LAYOUT_IN_KEY XY_IN_GRID(7,6)
 
-//right corner
-#define PAD_LAYOUT_CHROMATIC 88
-#define PAD_LAYOUT_IN_KEY 78
+#define PAD_KEY_SIGNATURE_C XY_IN_GRID(1,7)
+#define PAD_KEY_SIGNATURE_G XY_IN_GRID(2,7)
+#define PAD_KEY_SIGNATURE_D XY_IN_GRID(3,7)
+#define PAD_KEY_SIGNATURE_A XY_IN_GRID(4,7)
+#define PAD_KEY_SIGNATURE_E XY_IN_GRID(5,7)
+#define PAD_KEY_SIGNATURE_B XY_IN_GRID(6,7)
 
-//top row
-#define PAD_KEY_SIGNATURE_C 82
-#define PAD_KEY_SIGNATURE_G 83
-#define PAD_KEY_SIGNATURE_D 84
-#define PAD_KEY_SIGNATURE_A 85
-#define PAD_KEY_SIGNATURE_E 86
-#define PAD_KEY_SIGNATURE_B 87
-
-//second row
-#define PAD_KEY_SIGNATURE_F 72
-#define PAD_KEY_SIGNATURE_Bb 73
-#define PAD_KEY_SIGNATURE_Eb 74
-#define PAD_KEY_SIGNATURE_Ab 75
-#define PAD_KEY_SIGNATURE_Db 76
-#define PAD_KEY_SIGNATURE_Gb 77
+#define PAD_KEY_SIGNATURE_F   XY_IN_GRID(1,6)
+#define PAD_KEY_SIGNATURE_Bb  XY_IN_GRID(2,6)
+#define PAD_KEY_SIGNATURE_Eb  XY_IN_GRID(3,6)
+#define PAD_KEY_SIGNATURE_Ab  XY_IN_GRID(4,6)
+#define PAD_KEY_SIGNATURE_Db  XY_IN_GRID(5,6)
+#define PAD_KEY_SIGNATURE_Gb  XY_IN_GRID(6,6)
 
 #define PAD_KEY_TYPE_COLOUR_ON blue
 #define PAD_KEY_TYPE_COLOUR_OFF dark_blue
@@ -72,17 +65,28 @@ PadColour white = {MAXLED,MAXLED,MAXLED};
 PadColour grey = {MAXLED/4,MAXLED/4,MAXLED/4};
 
 typedef enum _KeyType {
-  Major = 0,
-  Minor,
+  KeyTypeMajor = 0,
+  KeyTypeMinor,
 }KeyType;
 
 typedef enum _KeySignature {
-  C, Db, D, Eb, E, F, Gb, G, Ab, A, Bb, B
+  KeySignatureC,
+  KeySignatureDb,
+  KeySignatureD,
+  KeySignatureEb,
+  KeySignatureE,
+  KeySignatureF,
+  KeySignatureGb,
+  KeySignatureG,
+  KeySignatureAb,
+  KeySignatureA,
+  KeySignatureBb,
+  KeySignatureB
 }KeySignature;
 
 typedef enum _Layout {
-  Chromatic,
-  InKey
+  LayoutChromatic,
+  LayoutInKey
 }Layout;
 
 KeyType current_key_type;
@@ -105,9 +109,9 @@ bool is_in_layout_section(u8 index);
 bool is_in_note_section(u8 index);
 
 // private functions
-void set_pad_colour(u8 index, PadColour padColour)
+void set_pad_colour(u8 grid_index, PadColour padColour)
 {
-  hal_plot_led(TYPEPAD, index, padColour.r, padColour.g, padColour.b);
+  hal_plot_led(TYPEPAD, grid_to_index(grid_index), padColour.r, padColour.g, padColour.b);
 }
 
 void setup_defaults()
@@ -129,11 +133,11 @@ void toggle_major_minor(u8 index)
   if (index == PAD_KEY_TYPE_MAJOR) {
     set_pad_colour(PAD_KEY_TYPE_MAJOR, PAD_KEY_TYPE_COLOUR_ON);
     set_pad_colour(PAD_KEY_TYPE_MINOR, PAD_KEY_TYPE_COLOUR_OFF);
-    current_key_type = index;
+    current_key_type = KeyTypeMajor;
   } else { //minor key
     set_pad_colour(PAD_KEY_TYPE_MAJOR, PAD_KEY_TYPE_COLOUR_OFF);
     set_pad_colour(PAD_KEY_TYPE_MINOR, PAD_KEY_TYPE_COLOUR_ON);
-    current_key_type = index;
+    current_key_type = KeyTypeMinor;
   }
 }
 
@@ -142,9 +146,11 @@ void toggle_layout(u8 index)
   if (index == PAD_LAYOUT_CHROMATIC) {
     set_pad_colour(PAD_LAYOUT_CHROMATIC, PAD_LAYOUT_COLOUR_ON);
     set_pad_colour(PAD_LAYOUT_IN_KEY, PAD_LAYOUT_COLOUR_OFF);
-  } else { //minor key
+    current_layout = LayoutChromatic;
+  } else { //in key
     set_pad_colour(PAD_LAYOUT_CHROMATIC, PAD_LAYOUT_COLOUR_OFF);
     set_pad_colour(PAD_LAYOUT_IN_KEY, PAD_LAYOUT_COLOUR_ON);
+    current_layout = LayoutInKey;
   }
 }
 
@@ -183,17 +189,20 @@ bool is_in_note_section(u8 index)
   return true;
 }
 
+
 // public funtions
 void jt_handle_pad_event(u8 index, u8 value)
 {
-  if (is_in_key_type_section(index)) {
-    toggle_major_minor(index);
-  } else  if (is_in_key_signature_section(index)){
-    toggle_key_signature(index);
-  } else if (is_in_layout_section(index)) {
-    toggle_layout(index);
-  } else if (is_in_note_section(index)) {
-    toggle_note(index, value);
+  u8 grid_index = index_to_grid(index);
+
+  if (is_in_key_type_section(grid_index)) {
+    toggle_major_minor(grid_index);
+  } else  if (is_in_key_signature_section(grid_index)){
+    toggle_key_signature(grid_index);
+  } else if (is_in_layout_section(grid_index)) {
+    toggle_layout(grid_index);
+  } else if (is_in_note_section(grid_index)) {
+    toggle_note(grid_index, value);
   }
 }
 
