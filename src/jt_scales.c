@@ -24,7 +24,7 @@
 #define PAD_KEY_SIGNATURE_Gb XY_IN_GRID(6,6)
 
 #define PAD_NOTE_RECT_BOTTOM_LEFT XY_IN_GRID(0,0)
-#define PAD_NOTE_RECT_TOP_RIGHT XY_IN_GRID(5,5)
+#define PAD_NOTE_RECT_TOP_RIGHT XY_IN_GRID(7,5)
 
 #define PAD_KEY_TYPE_COLOUR_ON blue
 #define PAD_KEY_TYPE_COLOUR_OFF dark_blue
@@ -52,35 +52,6 @@ u8 key_signature_section[KEY_SIGNATURE_COUNT] = {
 #define DEFAULT_KEY_TYPE PAD_KEY_TYPE_MAJOR
 #define DEFUALT_KEY_SIGNATURE PAD_KEY_SIGNATURE_C
 #define DEFUALT_LAYOUT PAD_LAYOUT_CHROMATIC
-
-typedef enum _KeyType {
-  KeyTypeMajor = 0,
-  KeyTypeMinor,
-}KeyType;
-
-typedef enum _KeySignature {
-  KeySignatureC,
-  KeySignatureDb,
-  KeySignatureD,
-  KeySignatureEb,
-  KeySignatureE,
-  KeySignatureF,
-  KeySignatureGb,
-  KeySignatureG,
-  KeySignatureAb,
-  KeySignatureA,
-  KeySignatureBb,
-  KeySignatureB
-}KeySignature;
-
-typedef enum _Layout {
-  LayoutChromatic,
-  LayoutInKey
-}Layout;
-
-KeyType current_key_type;
-KeySignature current_key_signature;
-Layout current_layout;
 
 void setup_defaults();
 void setup_key_signature_section();
@@ -114,11 +85,9 @@ void toggle_major_minor(u8 index)
   if (index == PAD_KEY_TYPE_MAJOR) {
     set_pad_colour(PAD_KEY_TYPE_MAJOR, PAD_KEY_TYPE_COLOUR_ON);
     set_pad_colour(PAD_KEY_TYPE_MINOR, PAD_KEY_TYPE_COLOUR_OFF);
-    current_key_type = KeyTypeMajor;
   } else { //minor key
     set_pad_colour(PAD_KEY_TYPE_MAJOR, PAD_KEY_TYPE_COLOUR_OFF);
     set_pad_colour(PAD_KEY_TYPE_MINOR, PAD_KEY_TYPE_COLOUR_ON);
-    current_key_type = KeyTypeMinor;
   }
 }
 
@@ -127,11 +96,9 @@ void toggle_layout(u8 index)
   if (index == PAD_LAYOUT_CHROMATIC) {
     set_pad_colour(PAD_LAYOUT_CHROMATIC, PAD_LAYOUT_COLOUR_ON);
     set_pad_colour(PAD_LAYOUT_IN_KEY, PAD_LAYOUT_COLOUR_OFF);
-    current_layout = LayoutChromatic;
   } else { //in key
     set_pad_colour(PAD_LAYOUT_CHROMATIC, PAD_LAYOUT_COLOUR_OFF);
     set_pad_colour(PAD_LAYOUT_IN_KEY, PAD_LAYOUT_COLOUR_ON);
-    current_layout = LayoutInKey;
   }
 }
 

@@ -138,16 +138,4 @@ void app_timer_event()
 void app_init()
 {
   jt_init();
-    // example - light the LEDs to say hello!
-	// for (int i=0; i < 10; ++i)
-	// {
-	// 	for (int j=0; j < 10; ++j)
-	// 	{
-	// 		u8 r = i < 5 ? (MAXLED * (5-i))/5 : 0;
-	// 		u8 g = i < 5 ? (MAXLED * i)/5 : (MAXLED * (10-i))/5;
-	// 		u8 b = i < 5 ? 0 : (MAXLED * (i-5))/5;
-  //
-	// 		hal_plot_led(TYPEPAD, j*10 + i, r, b, g);
-	// 	}
-	// }
 }

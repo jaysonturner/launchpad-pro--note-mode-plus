@@ -1,5 +1,7 @@
-#include "jt_scale_factory.h"
+#include "scale_factory.h"
 #include <string.h>
+
+#define NUMBER_OF_NOTES 56
 
 #define ASCII_NUMBER_TO_INT (x-48)
 
@@ -16,3 +18,9 @@
 //
 //   return 0;
 // }
+
+
+u8* layout_for_key_siganture(char *key, u8 layout_style)
+{
+  return 0;
+}
