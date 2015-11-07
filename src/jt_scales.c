@@ -16,12 +16,15 @@
 #define PAD_KEY_SIGNATURE_E XY_IN_GRID(5,7)
 #define PAD_KEY_SIGNATURE_B XY_IN_GRID(6,7)
 
-#define PAD_KEY_SIGNATURE_F   XY_IN_GRID(1,6)
-#define PAD_KEY_SIGNATURE_Bb  XY_IN_GRID(2,6)
-#define PAD_KEY_SIGNATURE_Eb  XY_IN_GRID(3,6)
-#define PAD_KEY_SIGNATURE_Ab  XY_IN_GRID(4,6)
-#define PAD_KEY_SIGNATURE_Db  XY_IN_GRID(5,6)
-#define PAD_KEY_SIGNATURE_Gb  XY_IN_GRID(6,6)
+#define PAD_KEY_SIGNATURE_F  XY_IN_GRID(1,6)
+#define PAD_KEY_SIGNATURE_Bb XY_IN_GRID(2,6)
+#define PAD_KEY_SIGNATURE_Eb XY_IN_GRID(3,6)
+#define PAD_KEY_SIGNATURE_Ab XY_IN_GRID(4,6)
+#define PAD_KEY_SIGNATURE_Db XY_IN_GRID(5,6)
+#define PAD_KEY_SIGNATURE_Gb XY_IN_GRID(6,6)
+
+#define PAD_NOTE_RECT_BOTTOM_LEFT XY_IN_GRID(0,0)
+#define PAD_NOTE_RECT_TOP_RIGHT XY_IN_GRID(5,5)
 
 #define PAD_KEY_TYPE_COLOUR_ON blue
 #define PAD_KEY_TYPE_COLOUR_OFF dark_blue
@@ -101,7 +104,6 @@ void setup_key_signature_section();
 void toggle_major_minor(u8 index);
 void toggle_key_signature(u8 index);
 void toggle_layout(u8 index);
-void toggle_note(u8 index, u8 value);
 
 bool is_in_key_signature_section(u8 index);
 bool is_in_key_type_section(u8 index);
@@ -112,6 +114,12 @@ bool is_in_note_section(u8 index);
 void set_pad_colour(u8 grid_index, PadColour padColour)
 {
   hal_plot_led(TYPEPAD, grid_to_index(grid_index), padColour.r, padColour.g, padColour.b);
+}
+
+void send_midi_note_on(u8 note_number, u8 velocity)
+{
+  hal_send_midi(DINMIDI, NOTEON | 0, note_number, velocity);
+  hal_send_midi(USBSTANDALONE, NOTEON | 0, note_number, velocity);
 }
 
 void setup_defaults()
@@ -160,11 +168,6 @@ void toggle_key_signature(u8 index)
   set_pad_colour(index, PAD_KEY_SIGNATURE_COLOUR_ON);
 }
 
-void toggle_note(u8 index, u8 value)
-{
-  hal_plot_led(TYPEPAD, index, value/2, value/2, value/2);
-}
-
 bool is_in_key_signature_section(u8 index)
 {
   for (int i = 0; i < KEY_SIGNATURE_COUNT; i++) {
@@ -186,9 +189,8 @@ bool is_in_layout_section(u8 index)
 
 bool is_in_note_section(u8 index)
 {
-  return true;
+  return index >= PAD_NOTE_RECT_BOTTOM_LEFT && index <= PAD_NOTE_RECT_TOP_RIGHT;
 }
-
 
 // public funtions
 void jt_handle_pad_event(u8 index, u8 value)
@@ -201,8 +203,15 @@ void jt_handle_pad_event(u8 index, u8 value)
     toggle_key_signature(grid_index);
   } else if (is_in_layout_section(grid_index)) {
     toggle_layout(grid_index);
-  } else if (is_in_note_section(grid_index)) {
-    toggle_note(grid_index, value);
+  }
+}
+
+void jt_handle_midi_event(u8 index, u8 velocity)
+{
+  u8 grid_index = index_to_grid(index);
+
+  if (is_in_note_section(grid_index)) {
+    send_midi_note_on(grid_index+21, velocity); //A0 for now
   }
 }
 

@@ -5,5 +5,6 @@
 
 void jt_init();
 void jt_handle_pad_event(u8 index, u8 value);
+void jt_handle_midi_event(u8 index, u8 value);
 
 #endif
