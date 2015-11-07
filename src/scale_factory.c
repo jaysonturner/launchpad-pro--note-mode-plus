@@ -40,8 +40,10 @@ Note* chromatic_layout(u8 starting_note_number)
   return returnable_layout;
 }
 
-Note* layout_for_key_signature(KeySignature key, KeyType type, Layout layout_style)
+Note* layout_for_key_signature(KeySignature key, KeyType type, u8 octave, Layout layout_style)
 {
+  u8 c_minus_2 = 0;
+
   return chromatic_layout(24);
 }
 

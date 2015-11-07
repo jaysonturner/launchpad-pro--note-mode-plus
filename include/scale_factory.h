@@ -37,6 +37,6 @@ typedef struct _Note {
   bool is_sharp;
 }Note;
 
-Note* layout_for_key_signature(KeySignature key, KeyType type, Layout layout_style);
+Note* layout_for_key_signature(KeySignature key, KeyType type, u8 octave, Layout layout_style);
 
 #endif

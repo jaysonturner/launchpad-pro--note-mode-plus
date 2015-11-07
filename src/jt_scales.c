@@ -75,7 +75,7 @@ void setup_defaults()
   toggle_key_signature(DEFUALT_KEY_SIGNATURE);
   toggle_layout(DEFUALT_LAYOUT);
 
-  current_layout = layout_for_key_signature(0,0,0);
+  current_layout = layout_for_key_signature(0,0,2,0);
 
   Note n;
   PadColour colour;
