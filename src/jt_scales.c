@@ -27,6 +27,7 @@ typedef signed char bool;
 
 #define PAD_KEY_TYPE_COLOUR_ON red
 #define PAD_KEY_TYPE_COLOUR_OFF blue
+#define PAD_KEY_SIGNATURE_COLOUR_ON green
 #define PAD_KEY_SIGNATURE_COLOUR_OFF dark_green
 
 #define KEY_SIGNATURE_COUNT 12
@@ -45,6 +46,9 @@ u8 key_signature_section[KEY_SIGNATURE_COUNT] = {
   PAD_KEY_SIGNATURE_Gb
 };
 
+#define DEFAULT_KEY_TYPE PAD_KEY_TYPE_MAJOR
+#define DEFUALT_KEY_SIGNATURE PAD_KEY_SIGNATURE_C
+
 typedef struct _PadColour {
   u8 r;
   u8 g;
@@ -54,14 +58,16 @@ typedef struct _PadColour {
 PadColour red = {MAXLED,0,0};
 PadColour green = {0,MAXLED,0};
 PadColour blue = {0,0,MAXLED};
-PadColour dark_green = {0,MAXLED/2,0};
+PadColour dark_green = {0,MAXLED/4,0};
 
 // private function declarations
 void set_pad_colour(u8 index, PadColour padColour);
-void setup_grid_colours();
-void toggle_major_minor(u8 major_minor);
+void setup_defaults();
+void setup_key_signature_section();
+void toggle_major_minor(u8 index);
 bool is_in_key_signature_section(u8 index);
 bool is_in_key_type_section(u8 index);
+void toggle_key_signature(u8 index);
 
 // private functions
 void set_pad_colour(u8 index, PadColour padColour)
@@ -69,26 +75,34 @@ void set_pad_colour(u8 index, PadColour padColour)
   hal_plot_led(TYPEPAD, index, padColour.r, padColour.g, padColour.b);
 }
 
-void setup_grid_colours()
+void setup_defaults()
 {
-  //setup major/minor switch
-  toggle_major_minor(PAD_KEY_TYPE_MAJOR);
+  toggle_major_minor(DEFAULT_KEY_TYPE);
+  toggle_key_signature(DEFUALT_KEY_SIGNATURE);
+}
 
-  //setup key signature section
+void setup_key_signature_section()
+{
   for (int i = 0; i < KEY_SIGNATURE_COUNT; i++) {
     set_pad_colour(key_signature_section[i], PAD_KEY_SIGNATURE_COLOUR_OFF);
   }
 }
 
-void toggle_major_minor(u8 major_minor)
+void toggle_major_minor(u8 index)
 {
-  if (major_minor == PAD_KEY_TYPE_MAJOR) {
+  if (index == PAD_KEY_TYPE_MAJOR) {
     set_pad_colour(PAD_KEY_TYPE_MAJOR, PAD_KEY_TYPE_COLOUR_ON);
     set_pad_colour(PAD_KEY_TYPE_MINOR, PAD_KEY_TYPE_COLOUR_OFF);
   } else { //minor key
     set_pad_colour(PAD_KEY_TYPE_MAJOR, PAD_KEY_TYPE_COLOUR_OFF);
     set_pad_colour(PAD_KEY_TYPE_MINOR, PAD_KEY_TYPE_COLOUR_ON);
   }
+}
+
+void toggle_key_signature(u8 index)
+{
+  setup_key_signature_section();
+  set_pad_colour(index, PAD_KEY_SIGNATURE_COLOUR_ON);
 }
 
 bool is_in_key_signature_section(u8 index)
@@ -111,11 +125,11 @@ void jt_handle_pad_event(u8 index, u8 value)
   if (is_in_key_type_section(index)) {
     toggle_major_minor(index);
   } else  if (is_in_key_signature_section(index)){
-
+    toggle_key_signature(index);
   }
 }
 
 void jt_init()
 {
-  setup_grid_colours();
+  setup_defaults();
 }
