@@ -16,6 +16,9 @@ extern PadColour dark_green;
 extern PadColour dark_blue;
 extern PadColour white;
 extern PadColour grey;
+extern PadColour black;
+extern PadColour fuchsia;
+extern PadColour aqua;
 
 void set_pad_colour(u8 index, PadColour padColour);
 void send_midi_note_on(u8 note_number, u8 velocity);

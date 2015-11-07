@@ -9,6 +9,9 @@ PadColour dark_green = {0,MAXLED/4,0};
 PadColour dark_blue = {0,0,MAXLED/4};
 PadColour white = {MAXLED,MAXLED,MAXLED};
 PadColour grey = {MAXLED/4,MAXLED/4,MAXLED/4};
+PadColour black = {0,0,0};
+PadColour fuchsia = {MAXLED,0,MAXLED};
+PadColour aqua = {0,MAXLED,MAXLED}; 
 
 void set_pad_colour(u8 grid_index, PadColour padColour)
 {

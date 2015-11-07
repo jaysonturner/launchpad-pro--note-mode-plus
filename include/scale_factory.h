@@ -2,6 +2,7 @@
 #define SCALE_FACTORY_H
 
 #include "app_defs.h"
+#include "bool.h"
 
 typedef enum _KeyType {
   KeyTypeMajor,
@@ -27,5 +28,15 @@ typedef enum _Layout {
   LayoutChromatic,
   LayoutInKey
 }Layout;
+
+typedef struct _Note {
+  u8 midi_number;
+  u8 octave;
+  char note;
+  bool is_tonic;
+  bool is_sharp;
+}Note;
+
+Note* layout_for_key_signature(KeySignature key, KeyType type, Layout layout_style);
 
 #endif

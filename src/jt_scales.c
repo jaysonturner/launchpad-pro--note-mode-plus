@@ -2,6 +2,7 @@
 #include "bool.h"
 #include "grid.h"
 #include "pads_and_midi_controller.h"
+#include "scale_factory.h"
 
 #define PAD_KEY_TYPE_MAJOR XY_IN_GRID(0,7)
 #define PAD_KEY_TYPE_MINOR XY_IN_GRID(0,6)
@@ -49,6 +50,8 @@ u8 key_signature_section[KEY_SIGNATURE_COUNT] = {
   PAD_KEY_SIGNATURE_Gb
 };
 
+Note *current_layout;
+
 #define DEFAULT_KEY_TYPE PAD_KEY_TYPE_MAJOR
 #define DEFUALT_KEY_SIGNATURE PAD_KEY_SIGNATURE_C
 #define DEFUALT_LAYOUT PAD_LAYOUT_CHROMATIC
@@ -71,6 +74,25 @@ void setup_defaults()
   toggle_major_minor(DEFAULT_KEY_TYPE);
   toggle_key_signature(DEFUALT_KEY_SIGNATURE);
   toggle_layout(DEFUALT_LAYOUT);
+
+  current_layout = layout_for_key_signature(0,0,0);
+
+  Note n;
+  PadColour colour;
+  for (int i = 0; i < 48; i++) {
+    n = current_layout[i];
+    colour = aqua;
+
+    if (n.is_sharp) {
+      colour = black;
+    }
+
+    if (n.is_tonic) {
+      colour = fuchsia;
+    }
+
+    set_pad_colour(i, colour);
+  }
 }
 
 void setup_key_signature_section()
@@ -151,7 +173,8 @@ void jt_handle_midi_event(u8 index, u8 velocity)
   u8 grid_index = index_to_grid(index);
 
   if (is_in_note_section(grid_index)) {
-    send_midi_note_on(grid_index+21, velocity); //A0 for now
+    Note note = current_layout[grid_index];
+    send_midi_note_on(note.midi_number, velocity);
   }
 }
 
