@@ -3,22 +3,27 @@
 
 #define BUTTON_CHROMATIC_FIXED 95
 #define BUTTON_CHROMATIC_UNFIXED 96
+#define BUTTON_INKEY 97
 
-int button_layout_map[2][2] = {
+#define NUMBER_BUTTONS 3
+
+int button_layout_map[NUMBER_BUTTONS][2] = {
   {BUTTON_CHROMATIC_FIXED,LayoutChromaticFixed},
-  {BUTTON_CHROMATIC_UNFIXED,LayoutChromatic}
+  {BUTTON_CHROMATIC_UNFIXED,LayoutChromatic},
+  {BUTTON_INKEY,LayoutInKey}
 };
 
 Layout current_layout = LayoutChromaticFixed;
 
 int is_in_layout_section(int index)
 {
-  return index == BUTTON_CHROMATIC_FIXED || index == BUTTON_CHROMATIC_UNFIXED;
+  return index == BUTTON_CHROMATIC_FIXED || index == BUTTON_CHROMATIC_UNFIXED
+          || index == BUTTON_INKEY;
 }
 
 void update_layout_buttons()
 {
-  for (int i = 0; i < 2; i++) {
+  for (int i = 0; i < NUMBER_BUTTONS; i++) {
     if (button_layout_map[i][1] == current_layout) {
       set_pad_colour(button_layout_map[i][0],red);
     } else {
@@ -44,6 +49,9 @@ void lh_handle_index(int index)
     break;
     case BUTTON_CHROMATIC_FIXED:
       current_layout = LayoutChromaticFixed;
+    break;
+    case BUTTON_INKEY:
+      current_layout = LayoutInKey;
     break;
     default:
     break;
