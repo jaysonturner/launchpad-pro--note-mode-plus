@@ -2,7 +2,7 @@ BUILDDIR = build
 
 TOOLS = tools
 
-SOURCES += src/app.c src/jt_scales.c src/scale_factory.c src/grid.c src/pads_and_midi_controller.c src/transpose_handler.c src/key_sig_handler.c
+SOURCES += src/app.c src/jt_scales.c src/scale_factory.c src/grid.c src/pads_and_midi_controller.c src/transpose_handler.c src/key_sig_handler.c src/layout_handler.c
 
 INCLUDES += -Iinclude -I
 

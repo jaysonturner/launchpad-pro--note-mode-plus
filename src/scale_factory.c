@@ -1,5 +1,4 @@
 #include "scale_factory.h"
-#include <string.h>
 
 #define MAX_NUMBER_OF_NOTES 64
 #define OCTAVE_LENGTH 12
@@ -31,10 +30,9 @@ Note note_for_note_number(u8 note_number)
   return n;
 }
 
-Note* chromatic_layout(u8 starting_note_number)
+Note* unfixed_chromatic(u8 starting_note_number)
 {
   Note starting_note = note_for_note_number(starting_note_number);
-
   u8 note_number = starting_note_number;
 
   for (int i = 0; i < 8; i++) {
@@ -53,8 +51,51 @@ Note* chromatic_layout(u8 starting_note_number)
   return returnable_layout;
 }
 
+Note* fixed_chromatic(u8 starting_note_number)
+{
+  Note *unfixed_chromatic_in_c = unfixed_chromatic(0);
+
+  Note starting_note = note_for_note_number(starting_note_number);
+  u8 note_number = starting_note_number;
+
+  for (int i = 0; i < 8; i++) {
+    note_number = i + starting_note_number;
+
+    for (int j = 0; j < 8; j++) {
+      int index = i + (j * 8);
+
+      Note n = note_for_note_number(note_number);
+
+      Note un = unfixed_chromatic_in_c[index];
+
+      un.midi_number = n.midi_number;
+      un.is_fixed_tonic = are_tonal_equivalent(&un, &starting_note);
+      returnable_layout[index] = un;
+
+      note_number += 5;
+    }
+  }
+
+  return returnable_layout;
+}
+
+Note* chromatic_layout(u8 starting_note_number, bool fixed)
+{
+  Note *layout;
+
+  // I hate the way I make this fixed layout, but it works for now.
+  // very smelly.
+  if (fixed) {
+    layout = fixed_chromatic(starting_note_number);
+  } else {
+    layout = unfixed_chromatic(starting_note_number);
+  }
+
+  return layout;
+}
+
 Note* layout_for_key_signature(u8 note, u8 major_minor, u8 octave, Layout layout_style)
 {
   u8 starting_note = (note + (octave * 12));
-  return chromatic_layout(starting_note);
+  return chromatic_layout(starting_note, layout_style == LayoutChromaticFixed);
 }

@@ -12,6 +12,8 @@ PadColour grey = {MAXLED/4,MAXLED/4,MAXLED/4};
 PadColour black = {0,0,0};
 PadColour fuchsia = {MAXLED,0,MAXLED};
 PadColour aqua = {0,MAXLED,MAXLED};
+PadColour teal = {0,MAXLED/2,MAXLED/2};
+PadColour medium_purple = {147/4,112/4,219/4};
 
 void set_pad_colour(u8 index, PadColour padColour)
 {
