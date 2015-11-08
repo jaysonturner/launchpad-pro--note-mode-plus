@@ -5,7 +5,7 @@
 
 #define XY_IN_GRID(x,y) (y * 8 + x)
 
-u8 index_to_grid(u8 index);
-u8 grid_to_index(u8 grid_index);
+u8 gr_index_to_grid(u8 index);
+u8 gr_grid_to_index(u8 grid_index);
 
 #endif

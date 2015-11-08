@@ -14,7 +14,7 @@ u8 grid_map[GRID_SIZE] = {
 	81,82,83,84,85,86,87,88
 };
 
-u8 index_to_grid(u8 index)
+u8 gr_index_to_grid(u8 index)
 {
 	for (int i = 0; i < GRID_SIZE; i++) {
 		if (grid_map[i] == index)
@@ -23,7 +23,7 @@ u8 index_to_grid(u8 index)
 	return -1;
 }
 
-u8 grid_to_index(u8 grid_index)
+u8 gr_grid_to_index(u8 grid_index)
 {
 	return grid_map[grid_index];
 }

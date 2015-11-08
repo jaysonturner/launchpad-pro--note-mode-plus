@@ -189,7 +189,7 @@ bool is_in_note_section(u8 index)
 void jt_handle_pad_event(u8 index, u8 value)
 {
   //check main grid
-  u8 grid_index = index_to_grid(index);
+  u8 grid_index = gr_index_to_grid(index);
   if (is_in_key_type_section(grid_index)) {
     toggle_major_minor(grid_index);
   } else  if (is_in_key_signature_section(grid_index)){
@@ -208,7 +208,7 @@ void jt_handle_pad_event(u8 index, u8 value)
 
 void jt_handle_midi_event(u8 index, u8 velocity)
 {
-  u8 grid_index = index_to_grid(index);
+  u8 grid_index = gr_index_to_grid(index);
 
   if (is_in_note_section(grid_index)) {
     Note note = current_layout_grid[grid_index];

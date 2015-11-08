@@ -11,11 +11,11 @@ PadColour white = {MAXLED,MAXLED,MAXLED};
 PadColour grey = {MAXLED/4,MAXLED/4,MAXLED/4};
 PadColour black = {0,0,0};
 PadColour fuchsia = {MAXLED,0,MAXLED};
-PadColour aqua = {0,MAXLED,MAXLED}; 
+PadColour aqua = {0,MAXLED,MAXLED};
 
 void set_pad_colour(u8 grid_index, PadColour padColour)
 {
-  hal_plot_led(TYPEPAD, grid_to_index(grid_index), padColour.r, padColour.g, padColour.b);
+  hal_plot_led(TYPEPAD, gr_grid_to_index(grid_index), padColour.r, padColour.g, padColour.b);
 }
 
 void send_midi_note_on(u8 note_number, u8 velocity)
