@@ -1,7 +1,11 @@
 #include "scale_factory.h"
+#include <string.h>
 
 #define MAX_NUMBER_OF_NOTES 48
 #define OCTAVE_LENGTH 12
+
+// char *key_lookup_sharps[OCTAVE_LENGTH] = {"C","C#","D","D#","E","F","F#","G","G#","A","A#","B"};
+// char *key_lookup_flats[OCTAVE_LENGTH]  = {"C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B"};
 
 char chromatic_notes[OCTAVE_LENGTH]   = {'C','C','D','D','E','F','F','G','G','A','A','B'};
 char chromatic_pattern[OCTAVE_LENGTH] = {'n','#','n','#','n','n','#','n','#','n','#','n'};
@@ -49,9 +53,14 @@ Note* chromatic_layout(u8 starting_note_number)
   return returnable_layout;
 }
 
-Note* layout_for_key_signature(u8 key, u8 type, u8 octave, Layout layout_style)
+Note* layout_for_key_signature(u8 note, u8 major_minor, u8 octave, Layout layout_style)
 {
-  u8 c_minus_2 = 0;
+  u8 starting_note;
+  if (note > 11) {
+    starting_note = 0;
+  } else {
+    starting_note = note + (octave * 12);
+  }
 
-  return chromatic_layout(24);
+  return chromatic_layout(starting_note);
 }

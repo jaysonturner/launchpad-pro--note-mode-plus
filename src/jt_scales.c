@@ -35,19 +35,20 @@
 #define PAD_LAYOUT_COLOUR_OFF grey
 
 #define KEY_SIGNATURE_COUNT 12
-u8 key_signature_section[KEY_SIGNATURE_COUNT] = {
-  PAD_KEY_SIGNATURE_C,
-  PAD_KEY_SIGNATURE_G,
-  PAD_KEY_SIGNATURE_D,
-  PAD_KEY_SIGNATURE_A,
-  PAD_KEY_SIGNATURE_E,
-  PAD_KEY_SIGNATURE_B,
-  PAD_KEY_SIGNATURE_F,
-  PAD_KEY_SIGNATURE_Bb,
-  PAD_KEY_SIGNATURE_Eb,
-  PAD_KEY_SIGNATURE_Ab,
-  PAD_KEY_SIGNATURE_Db,
-  PAD_KEY_SIGNATURE_Gb
+
+u8 key_map[KEY_SIGNATURE_COUNT][KEY_SIGNATURE_COUNT] = {
+  {PAD_KEY_SIGNATURE_C,   0},
+  {PAD_KEY_SIGNATURE_G,   7},
+  {PAD_KEY_SIGNATURE_D,   2},
+  {PAD_KEY_SIGNATURE_A,   9},
+  {PAD_KEY_SIGNATURE_E,   4},
+  {PAD_KEY_SIGNATURE_B,   11},
+  {PAD_KEY_SIGNATURE_F,   5},
+  {PAD_KEY_SIGNATURE_Bb,  10},
+  {PAD_KEY_SIGNATURE_Eb,  3},
+  {PAD_KEY_SIGNATURE_Ab,  8},
+  {PAD_KEY_SIGNATURE_Db,  1},
+  {PAD_KEY_SIGNATURE_Gb,  6}
 };
 
 Note *current_layout;
@@ -58,6 +59,7 @@ Note *current_layout;
 
 void setup_defaults();
 void setup_key_signature_section();
+void setup_layout(u8 note, u8 type, u8 octave, Layout layout);
 
 void toggle_major_minor(u8 index);
 void toggle_key_signature(u8 index);
@@ -68,6 +70,8 @@ bool is_in_key_type_section(u8 index);
 bool is_in_layout_section(u8 index);
 bool is_in_note_section(u8 index);
 
+u8 note_number_for_key_sig_index(u8 index);
+
 // private functions
 void setup_defaults()
 {
@@ -75,7 +79,12 @@ void setup_defaults()
   toggle_key_signature(DEFUALT_KEY_SIGNATURE);
   toggle_layout(DEFUALT_LAYOUT);
 
-  current_layout = layout_for_key_signature(0,0,2,0);
+  setup_layout(11,0,2,0);
+}
+
+void setup_layout(u8 note, u8 type, u8 octave, Layout layout)
+{
+  current_layout = layout_for_key_signature(note,type,octave,layout);
 
   Note n;
   PadColour colour;
@@ -98,7 +107,7 @@ void setup_defaults()
 void setup_key_signature_section()
 {
   for (int i = 0; i < KEY_SIGNATURE_COUNT; i++) {
-    set_pad_colour(key_signature_section[i], PAD_KEY_SIGNATURE_COLOUR_OFF);
+    set_pad_colour(key_map[i][0], PAD_KEY_SIGNATURE_COLOUR_OFF);
   }
 }
 
@@ -126,14 +135,25 @@ void toggle_layout(u8 index)
 
 void toggle_key_signature(u8 index)
 {
+  u8 note = note_number_for_key_sig_index(index);
+  setup_layout(note, 0, 2, 0);
   setup_key_signature_section();
   set_pad_colour(index, PAD_KEY_SIGNATURE_COLOUR_ON);
+}
+
+u8 note_number_for_key_sig_index(u8 index)
+{
+  for (int i = 0; i < KEY_SIGNATURE_COUNT; i++) {
+    if (index == key_map[i][0])
+      return key_map[i][1];
+  }
+  return 0;
 }
 
 bool is_in_key_signature_section(u8 index)
 {
   for (int i = 0; i < KEY_SIGNATURE_COUNT; i++) {
-    if (index == key_signature_section[i])
+    if (index == key_map[i][0])
       return true;
   }
   return false;
