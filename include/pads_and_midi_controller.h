@@ -21,6 +21,7 @@ extern PadColour fuchsia;
 extern PadColour aqua;
 
 void set_pad_colour(u8 index, PadColour padColour);
+void set_pad_colour_grid(u8 grid_index, PadColour padColour);
 void send_midi_note_on(u8 note_number, u8 velocity);
 
 PadColour pad_colour_make(u8 r, u8 g, u8 b);

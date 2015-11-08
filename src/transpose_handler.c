@@ -1,4 +1,5 @@
 #include "transpose_handler.h"
+#include "pads_and_midi_controller.h"
 
 // #define BUTTON_LEFT 93
 // #define BUTTON_RIGHT 94
@@ -8,6 +9,10 @@
 int current_key_signature = 0;
 int current_is_minor = 0;
 int current_octave = 0;
+
+int is_in_transpose_section(int index);
+void valididate_transpose();
+void update();
 
 int is_in_transpose_section(int index)
 {
@@ -34,6 +39,12 @@ void valididate_transpose()
   }
 }
 
+void update()
+{
+  set_pad_colour(BUTTON_UP, dark_blue);
+  set_pad_colour(BUTTON_DOWN, dark_blue);
+}
+
 void th_handle_index(int index)
 {
   if(!is_in_transpose_section(index))
@@ -56,6 +67,11 @@ void th_handle_index(int index)
       break;
   }
   valididate_transpose();
+}
+
+void th_init()
+{
+  update();
 }
 
 void th_set_octave(int octave)

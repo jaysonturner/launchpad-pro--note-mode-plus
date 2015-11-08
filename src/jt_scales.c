@@ -44,7 +44,7 @@ void update_ui()
       colour = fuchsia;
     }
 
-    set_pad_colour(i, colour);
+    set_pad_colour_grid(i, colour);
   }
 }
 
@@ -81,6 +81,9 @@ void jt_handle_midi_event(u8 index, u8 velocity)
 
 void jt_init()
 {
+  ksh_init();
+  th_init();
+
   setup_defaults();
   update_ui();
 }
