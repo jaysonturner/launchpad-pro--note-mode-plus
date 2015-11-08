@@ -3,11 +3,7 @@
 #include "grid.h"
 #include "pads_and_midi_controller.h"
 #include "scale_factory.h"
-
-#define BUTTON_LEFT 93
-#define BUTTON_RIGHT 94
-#define BUTTON_UP 91
-#define BUTTON_DOWN 92
+#include "transpose_handler.h"
 
 #define PAD_KEY_TYPE_MAJOR XY_IN_GRID(0,7)
 #define PAD_KEY_TYPE_MINOR XY_IN_GRID(0,6)
@@ -58,9 +54,6 @@ u8 key_map[KEY_SIGNATURE_COUNT][KEY_SIGNATURE_COUNT] = {
 
 Note *current_layout_grid;
 
-s8 current_key;
-u8 current_major_minor;
-s8 current_octave;
 Layout current_layout;
 
 #define DEFAULT_KEY_TYPE PAD_KEY_TYPE_MAJOR
@@ -82,7 +75,6 @@ bool is_in_note_section(u8 index);
 bool is_in_transpose_section(u8 index);
 
 u8 note_number_for_key_sig_index(u8 index);
-void handle_transpose(u8 index);
 
 // private functions
 void setup_defaults()
@@ -91,17 +83,18 @@ void setup_defaults()
   toggle_key_signature(DEFUALT_KEY_SIGNATURE);
   toggle_layout(DEFUALT_LAYOUT);
 
-  current_key = note_number_for_key_sig_index(DEFUALT_KEY_SIGNATURE);
+  th_set_key_signature(note_number_for_key_sig_index(DEFUALT_KEY_SIGNATURE));
+  th_set_is_minor(0);
+  th_set_octave(4);
+
   current_layout = 0;
-  current_major_minor = 0;
-  current_octave = 4;
 
   setup_layout();
 }
 
 void setup_layout()
 {
-  current_layout_grid = layout_for_key_signature(current_key,current_major_minor,current_octave,current_layout);
+  current_layout_grid = layout_for_key_signature(th_get_key_signature(),th_get_is_minor(),th_get_octave(),current_layout);
 
   Note n;
   PadColour colour;
@@ -152,7 +145,7 @@ void toggle_layout(u8 index)
 
 void toggle_key_signature(u8 index)
 {
-  current_key = note_number_for_key_sig_index(index);
+  th_set_key_signature(note_number_for_key_sig_index(index));
 
   setup_layout();
   setup_key_signature_section();
@@ -192,51 +185,6 @@ bool is_in_note_section(u8 index)
   return index >= PAD_NOTE_RECT_BOTTOM_LEFT && index <= PAD_NOTE_RECT_TOP_RIGHT;
 }
 
-bool is_in_transpose_section(u8 index)
-{
-  return index == BUTTON_UP || index == BUTTON_DOWN
-        || index == BUTTON_LEFT || index == BUTTON_RIGHT;
-}
-
-void handle_transpose(u8 index)
-{
-  switch (index) {
-    case BUTTON_UP:
-      current_octave++;
-      break;
-    case BUTTON_DOWN:
-      current_octave--;
-      break;
-    case BUTTON_RIGHT:
-      current_key++;
-      break;
-    case BUTTON_LEFT:
-      current_key--;
-      break;
-    default:
-      break;
-  }
-
-  if (current_key > 11) {
-    current_key = 11;
-  }
-
-  if (current_key < 0) {
-    current_key = 0;
-  }
-
-  if (current_octave > 10) {
-    current_octave = 10;
-  }
-
-  if (current_octave < 0) {
-    current_octave = 0;
-  }
-
-  setup_layout();
-}
-
-
 // public funtions
 void jt_handle_pad_event(u8 index, u8 value)
 {
@@ -254,9 +202,8 @@ void jt_handle_pad_event(u8 index, u8 value)
     return;
 
   //check outer buttons
-  if (is_in_transpose_section(index)) {
-    handle_transpose(index);
-  }
+  th_handle_traspose(index);
+  setup_layout();
 }
 
 void jt_handle_midi_event(u8 index, u8 velocity)
