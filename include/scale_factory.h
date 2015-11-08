@@ -31,12 +31,12 @@ typedef enum _Layout {
 
 typedef struct _Note {
   u8 midi_number;
-  u8 octave;
+  s8 octave;
   char note;
   bool is_tonic;
   bool is_sharp;
 }Note;
 
-Note* layout_for_key_signature(KeySignature key, KeyType type, u8 octave, Layout layout_style);
+Note* layout_for_key_signature(u8 key, u8 type, u8 octave, Layout layout_style);
 
 #endif
