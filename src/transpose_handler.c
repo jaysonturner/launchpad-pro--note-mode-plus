@@ -41,8 +41,8 @@ void valididate_transpose()
 
 void update()
 {
-  set_pad_colour(BUTTON_UP, dark_blue);
-  set_pad_colour(BUTTON_DOWN, dark_blue);
+  set_pad_colour(BUTTON_UP, blue);
+  set_pad_colour(BUTTON_DOWN, blue);
 }
 
 void th_handle_index(int index)
