@@ -4,6 +4,11 @@
 #include "pads_and_midi_controller.h"
 #include "scale_factory.h"
 
+#define BUTTON_LEFT 93
+#define BUTTON_RIGHT 94
+#define BUTTON_UP 91
+#define BUTTON_DOWN 92
+
 #define PAD_KEY_TYPE_MAJOR XY_IN_GRID(0,7)
 #define PAD_KEY_TYPE_MINOR XY_IN_GRID(0,6)
 
@@ -51,7 +56,12 @@ u8 key_map[KEY_SIGNATURE_COUNT][KEY_SIGNATURE_COUNT] = {
   {PAD_KEY_SIGNATURE_Gb,  6}
 };
 
-Note *current_layout;
+Note *current_layout_grid;
+
+s8 current_key;
+u8 current_major_minor;
+s8 current_octave;
+Layout current_layout;
 
 #define DEFAULT_KEY_TYPE PAD_KEY_TYPE_MAJOR
 #define DEFUALT_KEY_SIGNATURE PAD_KEY_SIGNATURE_C
@@ -59,7 +69,7 @@ Note *current_layout;
 
 void setup_defaults();
 void setup_key_signature_section();
-void setup_layout(u8 note, u8 type, u8 octave, Layout layout);
+void setup_layout();
 
 void toggle_major_minor(u8 index);
 void toggle_key_signature(u8 index);
@@ -69,8 +79,10 @@ bool is_in_key_signature_section(u8 index);
 bool is_in_key_type_section(u8 index);
 bool is_in_layout_section(u8 index);
 bool is_in_note_section(u8 index);
+bool is_in_transpose_section(u8 index);
 
 u8 note_number_for_key_sig_index(u8 index);
+void handle_transpose(u8 index);
 
 // private functions
 void setup_defaults()
@@ -79,17 +91,22 @@ void setup_defaults()
   toggle_key_signature(DEFUALT_KEY_SIGNATURE);
   toggle_layout(DEFUALT_LAYOUT);
 
-  setup_layout(11,0,2,0);
+  current_key = note_number_for_key_sig_index(DEFUALT_KEY_SIGNATURE);
+  current_layout = 0;
+  current_major_minor = 0;
+  current_octave = 4;
+
+  setup_layout();
 }
 
-void setup_layout(u8 note, u8 type, u8 octave, Layout layout)
+void setup_layout()
 {
-  current_layout = layout_for_key_signature(note,type,octave,layout);
+  current_layout_grid = layout_for_key_signature(current_key,current_major_minor,current_octave,current_layout);
 
   Note n;
   PadColour colour;
   for (int i = 0; i < 48; i++) {
-    n = current_layout[i];
+    n = current_layout_grid[i];
     colour = aqua;
 
     if (n.is_sharp) {
@@ -135,8 +152,9 @@ void toggle_layout(u8 index)
 
 void toggle_key_signature(u8 index)
 {
-  u8 note = note_number_for_key_sig_index(index);
-  setup_layout(note, 0, 2, 0);
+  current_key = note_number_for_key_sig_index(index);
+
+  setup_layout();
   setup_key_signature_section();
   set_pad_colour(index, PAD_KEY_SIGNATURE_COLOUR_ON);
 }
@@ -174,17 +192,70 @@ bool is_in_note_section(u8 index)
   return index >= PAD_NOTE_RECT_BOTTOM_LEFT && index <= PAD_NOTE_RECT_TOP_RIGHT;
 }
 
+bool is_in_transpose_section(u8 index)
+{
+  return index == BUTTON_UP || index == BUTTON_DOWN
+        || index == BUTTON_LEFT || index == BUTTON_RIGHT;
+}
+
+void handle_transpose(u8 index)
+{
+  switch (index) {
+    case BUTTON_UP:
+      current_octave++;
+      break;
+    case BUTTON_DOWN:
+      current_octave--;
+      break;
+    case BUTTON_RIGHT:
+      current_key++;
+      break;
+    case BUTTON_LEFT:
+      current_key--;
+      break;
+    default:
+      break;
+  }
+
+  if (current_key > 11) {
+    current_key = 11;
+  }
+
+  if (current_key < 0) {
+    current_key = 0;
+  }
+
+  if (current_octave > 10) {
+    current_octave = 10;
+  }
+
+  if (current_octave < 0) {
+    current_octave = 0;
+  }
+
+  setup_layout();
+}
+
+
 // public funtions
 void jt_handle_pad_event(u8 index, u8 value)
 {
+  //check main grid
   u8 grid_index = index_to_grid(index);
-
   if (is_in_key_type_section(grid_index)) {
     toggle_major_minor(grid_index);
   } else  if (is_in_key_signature_section(grid_index)){
     toggle_key_signature(grid_index);
   } else if (is_in_layout_section(grid_index)) {
     toggle_layout(grid_index);
+  }
+
+  if (value == 0) //ignore up state
+    return;
+
+  //check outer buttons
+  if (is_in_transpose_section(index)) {
+    handle_transpose(index);
   }
 }
 
@@ -193,7 +264,7 @@ void jt_handle_midi_event(u8 index, u8 velocity)
   u8 grid_index = index_to_grid(index);
 
   if (is_in_note_section(grid_index)) {
-    Note note = current_layout[grid_index];
+    Note note = current_layout_grid[grid_index];
     send_midi_note_on(note.midi_number, velocity);
   }
 }

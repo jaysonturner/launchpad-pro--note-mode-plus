@@ -55,12 +55,6 @@ Note* chromatic_layout(u8 starting_note_number)
 
 Note* layout_for_key_signature(u8 note, u8 major_minor, u8 octave, Layout layout_style)
 {
-  u8 starting_note;
-  if (note > 11) {
-    starting_note = 0;
-  } else {
-    starting_note = note + (octave * 12);
-  }
-
+  u8 starting_note = (note + (octave * 12));
   return chromatic_layout(starting_note);
 }
