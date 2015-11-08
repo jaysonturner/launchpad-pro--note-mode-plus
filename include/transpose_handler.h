@@ -1,7 +1,7 @@
 #ifndef TRANSPOSE_HANDLER_H
 #define TRANSPOSE_HANDLER_H
 
-void th_handle_traspose(int index);
+void th_handle_index(int index);
 
 void th_set_octave(int octave);
 void th_set_is_minor(int minor);

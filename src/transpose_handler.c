@@ -34,7 +34,7 @@ void valididate_transpose()
   }
 }
 
-void th_handle_traspose(int index)
+void th_handle_index(int index)
 {
   if(!is_in_transpose_section(index))
     return;

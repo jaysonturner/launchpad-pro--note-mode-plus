@@ -1,4 +1,4 @@
-#include "layout_option_handler.h"
+#include "key_sig_handler.h"
 
 #define BUTTON_KEY_SIGNATURE_C 89
 #define BUTTON_KEY_SIGNATURE_G 79
@@ -42,12 +42,7 @@ int note_number_for_key_sig_index(int index)
   return -1;
 }
 
-void loh_initialise()
-{
-
-}
-
-void loh_handle_layout_option(int index)
+void ksh_handle_index(int index)
 {
   int note = note_number_for_key_sig_index(index);
 
@@ -57,7 +52,7 @@ void loh_handle_layout_option(int index)
   currently_selected_key = note;
 }
 
-int loh_get_selected_key_signature()
+int ksh_get_selected_key_signature()
 {
   return currently_selected_key;
 }

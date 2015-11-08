@@ -4,7 +4,7 @@
 #include "pads_and_midi_controller.h"
 #include "scale_factory.h"
 #include "transpose_handler.h"
-#include "layout_option_handler.h"
+#include "key_sig_handler.h"
 
 #define PAD_NOTE_RECT_BOTTOM_LEFT XY_IN_GRID(0,0)
 #define PAD_NOTE_RECT_TOP_RIGHT XY_IN_GRID(7,7)
@@ -19,7 +19,7 @@ bool is_in_note_section(u8 index);
 // private functions
 void setup_defaults()
 {
-  th_set_key_signature(loh_get_selected_key_signature());
+  th_set_key_signature(ksh_get_selected_key_signature());
   th_set_is_minor(0);
   th_set_octave(4);
 
@@ -61,9 +61,9 @@ void jt_handle_pad_event(u8 index, u8 value)
     return;
 
   //check outer buttons
-  loh_handle_layout_option(index);
-  th_set_key_signature(loh_get_selected_key_signature());
-  th_handle_traspose(index);
+  ksh_handle_index(index);
+  th_set_key_signature(ksh_get_selected_key_signature());
+  th_handle_index(index);
 
   //update ui
   update_ui();
