@@ -1,7 +1,7 @@
 #include "scale_factory.h"
 #include <string.h>
 
-#define MAX_NUMBER_OF_NOTES 48
+#define MAX_NUMBER_OF_NOTES 64
 #define OCTAVE_LENGTH 12
 
 // char *key_lookup_sharps[OCTAVE_LENGTH] = {"C","C#","D","D#","E","F","F#","G","G#","A","A#","B"};
@@ -40,7 +40,7 @@ Note* chromatic_layout(u8 starting_note_number)
   for (int i = 0; i < 8; i++) {
     note_number = i + starting_note_number;
 
-    for (int j = 0; j < 6; j++) {
+    for (int j = 0; j < 8; j++) {
       int index = i + (j * 8);
       Note n = note_for_note_number(note_number);
       n.is_tonic = are_tonal_equivalent(&n, &starting_note);

@@ -1,7 +1,7 @@
 #include "transpose_handler.h"
 
-#define BUTTON_LEFT 93
-#define BUTTON_RIGHT 94
+// #define BUTTON_LEFT 93
+// #define BUTTON_RIGHT 94
 #define BUTTON_UP 91
 #define BUTTON_DOWN 92
 
@@ -11,8 +11,8 @@ int current_octave = 0;
 
 int is_in_transpose_section(int index)
 {
-  return index == BUTTON_UP || index == BUTTON_DOWN
-        || index == BUTTON_LEFT || index == BUTTON_RIGHT;
+  return index == BUTTON_UP || index == BUTTON_DOWN;
+        // || index == BUTTON_LEFT || index == BUTTON_RIGHT;
 }
 
 void valididate_transpose()
@@ -46,12 +46,12 @@ void th_handle_traspose(int index)
     case BUTTON_DOWN:
       current_octave--;
       break;
-    case BUTTON_RIGHT:
-      current_key_signature++;
-      break;
-    case BUTTON_LEFT:
-      current_key_signature--;
-      break;
+    // case BUTTON_RIGHT:
+    //   current_key_signature++;
+    //   break;
+    // case BUTTON_LEFT:
+    //   current_key_signature--;
+    //   break;
     default:
       break;
   }
