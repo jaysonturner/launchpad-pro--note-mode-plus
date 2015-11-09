@@ -36,7 +36,7 @@ void update_ui()
     n = current_layout_grid[i];
     colour = aqua;
 
-    if (n.is_sharp) {
+    if (n.is_sharp && lh_get_layout() != LayoutInKey) {
       colour = black;
     }
 
