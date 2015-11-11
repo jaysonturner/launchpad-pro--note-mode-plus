@@ -1,6 +1,7 @@
 #include "scale_factory.h"
 #include <stdlib.h>
 
+#define GRID_WH 8
 #define MAX_NUMBER_OF_NOTES 64
 #define OCTAVE_LENGTH 12
 #define SCALE_LENGTH 7
@@ -20,8 +21,32 @@ int inkey_degree_map[8][8] = {
 char chromatic_notes[OCTAVE_LENGTH]   = {'C','C','D','D','E','F','F','G','G','A','A','B'};
 char chromatic_pattern[OCTAVE_LENGTH] = {'n','#','n','#','n','n','#','n','#','n','#','n'};
 
-int scale_major[SCALE_LENGTH] = {0,2,4,5,7,9,11};
-int scale_minor[SCALE_LENGTH] = {0,2,3,5,7,8,10};
+int scale_major[7] = {0,2,4,5,7,9,11};
+int scale_minor[7] = {0,2,3,5,7,8,10};
+int scale_dorian[7] = {0,2,3,5,7,9,10};
+int scale_myxolydian[7] = {0,2,4,5,7,9,10};
+int scale_lydian[7] = {0,2,4,6,7,9,11};
+
+// 'Phrygian', [0, 1, 3, 5, 7, 8, 10],
+// 'Locrian', [0, 1, 3, 5, 6, 8, 10],
+// 'Diminished', [0, 1, 3, 4, 6, 7, 9, 10],
+// 'Whole-half', [0, 2, 3, 5, 6, 8, 9, 11],
+// 'Whole Tone', [0, 2, 4, 6, 8, 10],
+// 'Minor Blues', [0,3, 5, 6, 7, 10],
+// 'Minor Pentatonic', [0, 3, 5, 7, 10],
+// 'Major Pentatonic', [0,2, 4, 7, 9],
+// 'Harmonic Minor', [0, 2, 3, 5, 7, 8, 11],
+// 'Melodic Minor', [0, 2, 3, 5, 7, 9, 11],
+// 'Super Locrian', [0, 1, 3, 4, 6, 8, 10],
+// 'Bhairav', [0, 1, 4, 5, 7, 8, 11],
+// 'Hungarian Minor', [0, 2, 3, 6, 7, 8, 11],
+// 'Minor Gypsy', [0, 1, 4, 5, 7, 8, 10],
+// 'Hirojoshi', [0, 2, 3, 7, 8],
+// 'In-Sen', [0, 1, 5, 7, 10],
+// 'Iwato', [0, 1, 5, 6, 10],
+// 'Kumoi', [0, 2, 3, 7, 9],
+// 'Pelog', [0, 1, 3, 4, 7, 8],
+// 'Spanish', [0,1,3,4,5,6,8,10]]
 
 Note returnable_layout[MAX_NUMBER_OF_NOTES];
 
@@ -32,7 +57,7 @@ int midi_for_degree(int degree, int *scale)
 
   while (d > 6) {
     d = d - 7;
-    midi += 12;
+    midi += OCTAVE_LENGTH;
   }
 
   return scale[d] + midi;
@@ -45,14 +70,14 @@ bool are_tonal_equivalent(Note *note1, Note* note2)
 
 Note note_for_note_number(u8 note_number)
 {
-  int nearest_c = note_number - (note_number % 12);
+  int nearest_c = note_number - (note_number % OCTAVE_LENGTH);
   int normalised_note = note_number - nearest_c;
 
   Note n;
   n.midi_number = note_number;
   n.is_sharp = (chromatic_pattern[normalised_note] == '#');
   n.note = chromatic_notes[normalised_note];
-  n.octave = (nearest_c / 12) - 2; //anchored at C-2 (midi 0)
+  n.octave = (nearest_c / OCTAVE_LENGTH) - 2; //anchored at C-2 (midi 0)
 
   return n;
 }
@@ -62,11 +87,11 @@ Note* unfixed_chromatic(u8 starting_note_number)
   Note starting_note = note_for_note_number(starting_note_number);
   u8 note_number = starting_note_number;
 
-  for (int i = 0; i < 8; i++) {
+  for (int i = 0; i < GRID_WH; i++) {
     note_number = i + starting_note_number;
 
-    for (int j = 0; j < 8; j++) {
-      int index = i + (j * 8);
+    for (int j = 0; j < GRID_WH; j++) {
+      int index = i + (j * GRID_WH);
       Note n = note_for_note_number(note_number);
       n.is_tonic = are_tonal_equivalent(&n, &starting_note);
       returnable_layout[index] = n;
@@ -85,11 +110,11 @@ Note* fixed_chromatic(u8 starting_note_number)
   Note starting_note = note_for_note_number(starting_note_number);
   u8 note_number = starting_note_number;
 
-  for (int i = 0; i < 8; i++) {
+  for (int i = 0; i < GRID_WH; i++) {
     note_number = i + starting_note_number;
 
-    for (int j = 0; j < 8; j++) {
-      int index = i + (j * 8);
+    for (int j = 0; j < GRID_WH; j++) {
+      int index = i + (j * GRID_WH);
 
       Note n = note_for_note_number(note_number);
 
@@ -127,9 +152,9 @@ Note* inkey_layout(u8 starting_note_number, int *scale)
   u8 note_number = starting_note_number;
 
   int degree = 0;
-  for (int i = 0; i < 8; i++) {
-    for (int j = 0; j < 8; j++) {
-      int index = i + (j * 8);
+  for (int i = 0; i < GRID_WH; i++) {
+    for (int j = 0; j < GRID_WH; j++) {
+      int index = i + (j * GRID_WH);
 
       degree = inkey_degree_map[j][i]-1;
       note_number = midi_for_degree(degree, scale) + starting_note_number;
@@ -145,7 +170,7 @@ Note* inkey_layout(u8 starting_note_number, int *scale)
 
 Note* layout_for_key_signature(u8 note, ScaleType scale_type, u8 octave, Layout layout_style)
 {
-  u8 starting_note = (note + (octave * 12));
+  u8 starting_note = (note + (octave * OCTAVE_LENGTH));
 
   int *scale = scale_major;
 
