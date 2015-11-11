@@ -5,15 +5,38 @@
 #define OCTAVE_LENGTH 12
 #define SCALE_LENGTH 7
 
-// char *key_lookup_sharps[OCTAVE_LENGTH] = {"C","C#","D","D#","E","F","F#","G","G#","A","A#","B"};
-// char *key_lookup_flats[OCTAVE_LENGTH]  = {"C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B"};
+//upside down to physical layout
+int inkey_degree_map[8][8] = {
+  {1 ,2 ,3 ,4 ,5 ,6 ,7 ,8 },//0
+  {4 ,5 ,6 ,7 ,8 ,9 ,10,11},//1
+  {7 ,8 ,9 ,10,11,12,13,14},//2
+  {10,11,12,13,14,15,16,17},//3
+  {13,14,15,16,17,18,19,20},//4
+  {16,17,18,19,20,21,22,23},//5
+  {19,20,21,22,23,24,25,26},//6
+  {22,23,24,25,26,27,28,29},//7
+};
 
 char chromatic_notes[OCTAVE_LENGTH]   = {'C','C','D','D','E','F','F','G','G','A','A','B'};
 char chromatic_pattern[OCTAVE_LENGTH] = {'n','#','n','#','n','n','#','n','#','n','#','n'};
 
 int scale_major[SCALE_LENGTH] = {0,2,4,5,7,9,11};
+int scale_minor[SCALE_LENGTH] = {0,2,3,5,7,8,10};
 
 Note returnable_layout[MAX_NUMBER_OF_NOTES];
+
+int midi_for_degree(int degree, int *scale)
+{
+  int d = degree;
+  int midi = 0;
+
+  while (d > 6) {
+    d = d - 7;
+    midi += 12;
+  }
+
+  return scale[d] + midi;
+}
 
 bool are_tonal_equivalent(Note *note1, Note* note2)
 {
@@ -98,48 +121,22 @@ Note* chromatic_layout(u8 starting_note_number, bool fixed)
   return layout;
 }
 
-Note* inkey_layout(u8 starting_note_number)
+Note* inkey_layout(u8 starting_note_number, int *scale)
 {
   Note starting_note = note_for_note_number(starting_note_number);
   u8 note_number = starting_note_number;
 
-
-  int x_degree = 0;
-  int y_degree = 0;
+  int degree = 0;
   for (int i = 0; i < 8; i++) {
-    note_number = scale_major[x_degree] + starting_note_number;
-    y_degree = x_degree;
-
     for (int j = 0; j < 8; j++) {
       int index = i + (j * 8);
+
+      degree = inkey_degree_map[j][i]-1;
+      note_number = midi_for_degree(degree, scale) + starting_note_number;
 
       Note n = note_for_note_number(note_number);
       n.is_tonic = are_tonal_equivalent(&n, &starting_note);
       returnable_layout[index] = n;
-
-      int old_y_degree = y_degree;
-
-      y_degree+=3;
-
-      if (y_degree > 6) {
-        y_degree = y_degree-7;
-      }
-
-      int interval;
-
-      if (y_degree < old_y_degree){
-        interval = (abs(scale_major[old_y_degree] - scale_major[y_degree]))-2;
-      } else {
-        interval = abs(scale_major[old_y_degree] - scale_major[y_degree]);
-      }
-
-      note_number += interval;
-    }
-
-    x_degree++;
-
-    if (x_degree > 6) {
-      x_degree = 0;
     }
   }
 
@@ -153,6 +150,6 @@ Note* layout_for_key_signature(u8 note, u8 major_minor, u8 octave, Layout layout
   if (layout_style == LayoutChromatic || layout_style == LayoutChromaticFixed) {
     return chromatic_layout(starting_note, layout_style == LayoutChromaticFixed);
   } else {
-    return inkey_layout(starting_note);
+    return inkey_layout(starting_note, major_minor ? scale_minor : scale_major);
   }
 }

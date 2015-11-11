@@ -50,3 +50,5 @@ tools/osx/simulator.xcodeproj/xcuserdata/davehodder.xcuserdatad/xcschemes/xcsche
 
 *.xcbkptlist
 tools/osx/simulator.xcodeproj/xcuserdata
+
+tests_scale_factory
