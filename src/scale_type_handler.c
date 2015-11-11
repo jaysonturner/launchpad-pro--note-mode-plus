@@ -1,8 +1,10 @@
 #include "scale_type_handler.h"
 
+ScaleType current_scale_type = ScaleTypeMajor;
+
 void sth_init()
 {
-
+  current_scale_type = ScaleTypeMajor;
 }
 
 void sth_handle_index(int index)
@@ -10,7 +12,12 @@ void sth_handle_index(int index)
 
 }
 
-int sth_get_selected_scale_type()
+ScaleType sth_get_selected_scale_type()
 {
-  return 0;
+  return current_scale_type;
+}
+
+void sth_set_selected_scale_type(ScaleType scale_type)
+{
+  current_scale_type = scale_type;
 }

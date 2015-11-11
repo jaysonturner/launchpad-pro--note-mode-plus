@@ -4,6 +4,7 @@
 #include "app_defs.h"
 #include "bool.h"
 #include "layout.h"
+#include "scale_type.h"
 
 typedef enum _KeyType {
   KeyTypeMajor,
@@ -19,6 +20,6 @@ typedef struct _Note {
   bool is_fixed_tonic;
 }Note;
 
-Note* layout_for_key_signature(u8 key, u8 type, u8 octave, Layout layout_style);
+Note* layout_for_key_signature(u8 key, ScaleType scale_type, u8 octave, Layout layout_style);
 
 #endif

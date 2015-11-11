@@ -7,7 +7,6 @@
 #define BUTTON_DOWN 92
 
 int current_key_signature = 0;
-int current_is_minor = 0;
 int current_octave = 0;
 
 int is_in_transpose_section(int index);
@@ -80,12 +79,6 @@ void th_set_octave(int octave)
   valididate_transpose();
 }
 
-void th_set_is_minor(int minor)
-{
-  current_is_minor = minor;
-  valididate_transpose();
-}
-
 void th_set_key_signature(int key_signature)
 {
   current_key_signature = key_signature;
@@ -95,11 +88,6 @@ void th_set_key_signature(int key_signature)
 int th_get_octave()
 {
   return current_octave;
-}
-
-int th_get_is_minor()
-{
-  return current_is_minor;
 }
 
 int th_get_key_signature()

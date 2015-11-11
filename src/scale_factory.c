@@ -143,13 +143,19 @@ Note* inkey_layout(u8 starting_note_number, int *scale)
   return returnable_layout;
 }
 
-Note* layout_for_key_signature(u8 note, u8 major_minor, u8 octave, Layout layout_style)
+Note* layout_for_key_signature(u8 note, ScaleType scale_type, u8 octave, Layout layout_style)
 {
   u8 starting_note = (note + (octave * 12));
+
+  int *scale = scale_major;
+
+  if (scale_type == ScaleTypeMinor) {
+    scale = scale_minor;
+  }
 
   if (layout_style == LayoutChromatic || layout_style == LayoutChromaticFixed) {
     return chromatic_layout(starting_note, layout_style == LayoutChromaticFixed);
   } else {
-    return inkey_layout(starting_note, major_minor ? scale_minor : scale_major);
+    return inkey_layout(starting_note, scale);
   }
 }
