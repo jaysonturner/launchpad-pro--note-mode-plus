@@ -26,9 +26,9 @@ int scale_minor[7] = {0,2,3,5,7,8,10};
 int scale_dorian[7] = {0,2,3,5,7,9,10};
 int scale_myxolydian[7] = {0,2,4,5,7,9,10};
 int scale_lydian[7] = {0,2,4,6,7,9,11};
+int scale_phrygian[7] = {0,1,3,5,7,8,10};
+int scale_locrian[7] = {0,1,3,5,6,8,10};
 
-// 'Phrygian', [0, 1, 3, 5, 7, 8, 10],
-// 'Locrian', [0, 1, 3, 5, 6, 8, 10],
 // 'Diminished', [0, 1, 3, 4, 6, 7, 9, 10],
 // 'Whole-half', [0, 2, 3, 5, 6, 8, 9, 11],
 // 'Whole Tone', [0, 2, 4, 6, 8, 10],
@@ -50,13 +50,13 @@ int scale_lydian[7] = {0,2,4,6,7,9,11};
 
 Note returnable_layout[MAX_NUMBER_OF_NOTES];
 
-int midi_for_degree(int degree, int *scale)
+int midi_for_degree(int degree, int *scale, int scale_length)
 {
   int d = degree;
   int midi = 0;
 
-  while (d > 6) {
-    d = d - 7;
+  while (d > scale_length-1) {
+    d = d - scale_length;
     midi += OCTAVE_LENGTH;
   }
 
@@ -146,7 +146,7 @@ Note* chromatic_layout(u8 starting_note_number, bool fixed)
   return layout;
 }
 
-Note* inkey_layout(u8 starting_note_number, int *scale)
+Note* inkey_layout(u8 starting_note_number, int *scale, int scale_length)
 {
   Note starting_note = note_for_note_number(starting_note_number);
   u8 note_number = starting_note_number;
@@ -157,7 +157,7 @@ Note* inkey_layout(u8 starting_note_number, int *scale)
       int index = i + (j * GRID_WH);
 
       degree = inkey_degree_map[j][i]-1;
-      note_number = midi_for_degree(degree, scale) + starting_note_number;
+      note_number = midi_for_degree(degree, scale, scale_length) + starting_note_number;
 
       Note n = note_for_note_number(note_number);
       n.is_tonic = are_tonal_equivalent(&n, &starting_note);
@@ -173,14 +173,16 @@ Note* layout_for_key_signature(u8 note, ScaleType scale_type, u8 octave, Layout 
   u8 starting_note = (note + (octave * OCTAVE_LENGTH));
 
   int *scale = scale_major;
+  int scale_length = 7;
 
   if (scale_type == ScaleTypeMinor) {
     scale = scale_minor;
+    scale_length = 7;
   }
 
   if (layout_style == LayoutChromatic || layout_style == LayoutChromaticFixed) {
     return chromatic_layout(starting_note, layout_style == LayoutChromaticFixed);
   } else {
-    return inkey_layout(starting_note, scale);
+    return inkey_layout(starting_note, scale, scale_length);
   }
 }

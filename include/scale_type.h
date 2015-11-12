@@ -3,7 +3,12 @@
 
 typedef enum _ScaleType {
   ScaleTypeMajor,
-  ScaleTypeMinor
+  ScaleTypeMinor,
+  ScaleDorian,
+  ScaleMyxolydian,
+  ScaleLydian,
+  ScalePhrygian,
+  ScaleLocrian,
 } ScaleType;
 
 #endif
