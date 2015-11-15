@@ -1,3 +1,12 @@
+# NoteMode+
+This a custom firmware for the Novation Launchpad Pro. NoteMode+ has three modes of operation:
+
+1. In-Key layout
+2. Chromatic windowed layout
+3. Chromatic fixed layout
+
+Read below to see how to compile this repo and flash your Launchpad.
+
 # Launchpad Pro
 Open source firmware for the Novation Launchpad Pro grid controller!  By customising this code, you can:
 
